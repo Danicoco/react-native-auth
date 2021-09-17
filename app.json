@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "persistent-login",
+    "slug": "persistent-login",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "persistent-login"
+}
