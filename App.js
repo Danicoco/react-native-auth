@@ -1,21 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import useAuth from './globalState';
+import { AuthStack, MainStack } from './navigation';
+
+//query client for react query
+const queryClient = new QueryClient();
 
 export default function App() {
+  const isAuthenticated = useAuth(state => state.isAuthenticated);
+  useEffect(() => {
+    const tokenChecker = async() => {
+      try {
+        const response = await SecureStore.getItemAsync('token');
+        if(response) {
+          useAuth.setState({ isAuthenticated: true });
+        }
+      } catch (error) {
+        useAuth.setState({ isAuthenticated: false });
+      }
+    }
+    tokenChecker();
+  },[]);
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <QueryClientProvider client={queryClient}>
+        {
+          isAuthenticated ?
+          <MainStack />
+          :
+          <AuthStack />
+        }
+      </QueryClientProvider>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
